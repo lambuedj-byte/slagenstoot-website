@@ -835,6 +835,45 @@
     .wrap{padding:0 20px;}
   }
 
+  /* ── Promo Video ── */
+  .promo-video-section{
+    background:var(--navy-light);
+    padding:90px 0;
+  }
+  .promo-video-inner{
+    display:grid;
+    grid-template-columns:1fr 340px;
+    gap:60px;
+    align-items:center;
+  }
+  .promo-video-text h2{
+    font-size:clamp(1.8rem,3.5vw,2.8rem);
+    margin:12px 0 16px;
+    color:var(--cream);
+  }
+  .promo-video-text p{color:rgba(243,236,223,0.65);}
+  .promo-video-embed{
+    position:relative;
+    width:100%;
+    aspect-ratio:9/16;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+  .promo-video-embed iframe{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+  }
+  @media(max-width:880px){
+    .promo-video-inner{
+      grid-template-columns:1fr;
+    }
+    .promo-video-embed{
+      max-width:320px;
+      margin:0 auto;
+    }
+  }
+
   /* ── Carnival Countdown ── */
   .carnival-countdown{
     position:relative;
@@ -1015,7 +1054,28 @@
         <span class="countdown-label">Seconden</span>
       </div>
     </div>
-    <p class="countdown-sub">7 februari 2027 &nbsp;·&nbsp; Slag &amp; Stoot maakt de tent kapot</p>
+    <p class="countdown-sub">5 februari 2027 · 11:11 &nbsp;·&nbsp; Slag &amp; Stoot maakt de tent kapot</p>
+  </div>
+</section>
+
+<section class="promo-video-section">
+  <div class="wrap promo-video-inner">
+    <div class="promo-video-text">
+      <span class="eyebrow">Bekijk de promo</span>
+      <h2>Zo ziet een avond<br>met Slag &amp; Stoot eruit</h2>
+      <p>Eén video zegt meer dan duizend woorden. Kijk zelf maar.</p>
+      <a href="#boeken" class="btn btn-primary" style="margin-top:24px">Boek Slag &amp; Stoot</a>
+    </div>
+    <div class="promo-video-embed">
+      <iframe
+        src="https://www.youtube.com/embed/arn5st2SCrc"
+        title="Slag &amp; Stoot promo video"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        loading="lazy">
+      </iframe>
+    </div>
   </div>
 </section>
 
@@ -1094,7 +1154,6 @@
       <span class="eyebrow">Sfeer op de vloer</span>
       <h2>Recht uit onze <span class="gold">stories</span></h2>
       <p>Een paar recente reels — zo voelt een avond met Slag &amp; Stoot van dichtbij.</p>
-      <p class="sound-unlock-hint" id="soundHint">🔇 Klik een video aan voor geluid — daarna werkt hoveren</p>
     </div>
     <div class="recap-grid">
       <div class="ph">
@@ -1317,7 +1376,7 @@
 
   // ── Countdown to Carnaval 2027 ──
   (function(){
-    const target = new Date('2027-02-07T10:00:00').getTime();
+    const target = new Date('2027-02-05T11:11:00').getTime();
     const els = {
       days: document.getElementById('cd-days'),
       hours: document.getElementById('cd-hours'),
@@ -1349,63 +1408,6 @@
     setInterval(tick,1000);
   })();
 
-  // Recap stories: klik = unlock audio, daarna hover = fade in/out
-  (function(){
-    let audioUnlocked = false;
-    const hint = document.getElementById('soundHint');
-    const duration = 350;
-    const phs = [...document.querySelectorAll('.recap .ph')];
-
-    // Voeg geluid-icoontje toe aan elke video
-    phs.forEach(ph => {
-      const icon = document.createElement('span');
-      icon.className = 'sound-icon';
-      icon.textContent = '🔇';
-      ph.appendChild(icon);
-    });
-
-    function fadeTo(video, icon, target) {
-      if (target > 0) { video.muted = false; if(icon) icon.textContent='🔊'; }
-      const start = video.volume;
-      const startTime = performance.now();
-      let rafId;
-      function step(now) {
-        const t = Math.min(1, (now - startTime) / duration);
-        video.volume = start + (target - start) * t;
-        if (t < 1) {
-          rafId = requestAnimationFrame(step);
-        } else if (target === 0) {
-          video.muted = true;
-          if(icon) icon.textContent='🔇';
-        }
-      }
-      rafId = requestAnimationFrame(step);
-    }
-
-    phs.forEach(ph => {
-      const video = ph.querySelector('video');
-      const icon = ph.querySelector('.sound-icon');
-      if (!video) return;
-
-      // Klik: ontgrendel audio (user gesture) en toggle geluid
-      ph.addEventListener('click', () => {
-        if (!audioUnlocked) {
-          audioUnlocked = true;
-          if (hint) { hint.textContent = '🔊 Hover over een video voor geluid'; }
-          setTimeout(() => { if(hint) hint.classList.add('hidden'); }, 2500);
-        }
-        fadeTo(video, icon, video.muted ? 1 : 0);
-      });
-
-      // Hover: werkt alleen nadat audio ontgrendeld is via klik
-      ph.addEventListener('mouseenter', () => {
-        if (audioUnlocked) fadeTo(video, icon, 1);
-      });
-      ph.addEventListener('mouseleave', () => {
-        if (audioUnlocked) fadeTo(video, icon, 0);
-      });
-    });
-  })();
 </script>
 </body>
 </html>
