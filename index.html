@@ -797,6 +797,7 @@
     section{padding:72px 0;}
     .nav-inner{padding:14px 20px;}
     .nav-logo .word{font-size:1.05rem;}
+    .hero-badge{display:none;}
     .hero-inner{padding:140px 0 70px;}
     .hero-cta{flex-direction:column;align-items:stretch;}
     .hero-cta .btn{justify-content:center;}
@@ -1142,6 +1143,38 @@
       navLinks.classList.remove('active');
       navToggle.classList.remove('active');
       navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Recap stories: fade audio in on hover, fade out on mouse leave
+  document.querySelectorAll('.recap .ph').forEach(ph => {
+    const video = ph.querySelector('video');
+    if (!video) return;
+    let fadeInterval;
+    const step = 0.08;
+
+    ph.addEventListener('mouseenter', () => {
+      clearInterval(fadeInterval);
+      video.muted = false;
+      video.volume = 0;
+      fadeInterval = setInterval(() => {
+        video.volume = Math.min(1, video.volume + step);
+        if (video.volume >= 1) clearInterval(fadeInterval);
+      }, 30);
+    });
+
+    ph.addEventListener('mouseleave', () => {
+      clearInterval(fadeInterval);
+      fadeInterval = setInterval(() => {
+        const next = video.volume - step;
+        if (next <= 0) {
+          video.volume = 0;
+          video.muted = true;
+          clearInterval(fadeInterval);
+        } else {
+          video.volume = next;
+        }
+      }, 30);
     });
   });
 </script>
