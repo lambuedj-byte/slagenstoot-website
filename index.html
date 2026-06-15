@@ -1157,6 +1157,10 @@
       clearInterval(fadeInterval);
       video.muted = false;
       video.volume = 0;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {});
+      }
       fadeInterval = setInterval(() => {
         video.volume = Math.min(1, video.volume + step);
         if (video.volume >= 1) clearInterval(fadeInterval);
@@ -1170,6 +1174,10 @@
         if (next <= 0) {
           video.volume = 0;
           video.muted = true;
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {});
+          }
           clearInterval(fadeInterval);
         } else {
           video.volume = next;
