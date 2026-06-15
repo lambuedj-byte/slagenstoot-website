@@ -808,6 +808,91 @@
     .booking-panel{padding:32px 20px;}
     .wrap{padding:0 20px;}
   }
+
+  /* ── Carnival Countdown ── */
+  .carnival-countdown{
+    position:relative;
+    background:var(--navy);
+    overflow:hidden;
+    padding:80px 0;
+    text-align:center;
+    border-top:1px solid rgba(217,178,92,0.15);
+    border-bottom:1px solid rgba(217,178,92,0.15);
+  }
+  .confetti-container{
+    position:absolute;inset:0;pointer-events:none;overflow:hidden;
+  }
+  .confetti-piece{
+    position:absolute;
+    top:-20px;
+    width:8px;height:14px;
+    border-radius:2px;
+    opacity:0;
+    animation:confetti-fall linear infinite;
+  }
+  @keyframes confetti-fall{
+    0%{transform:translateY(-20px) rotate(0deg);opacity:1;}
+    85%{opacity:1;}
+    100%{transform:translateY(110vh) rotate(720deg);opacity:0;}
+  }
+  .countdown-inner{position:relative;z-index:1;}
+  .carnival-countdown .eyebrow{color:var(--orange);}
+  .carnival-countdown h2{
+    font-size:clamp(1.6rem,3.5vw,2.6rem);
+    color:var(--cream);
+    margin:12px 0 40px;
+  }
+  .countdown-grid{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:0;
+    flex-wrap:wrap;
+  }
+  .countdown-card{
+    display:flex;flex-direction:column;align-items:center;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(217,178,92,0.2);
+    border-radius:12px;
+    padding:20px 28px;
+    min-width:100px;
+    margin:6px;
+  }
+  .countdown-num{
+    font-family:'Anton',sans-serif;
+    font-size:clamp(2.4rem,6vw,4.2rem);
+    color:var(--gold-light);
+    line-height:1;
+    letter-spacing:0.02em;
+    transition:transform 0.15s ease;
+  }
+  .countdown-num.flip{transform:scale(1.18);color:var(--orange);}
+  .countdown-label{
+    font-size:0.65rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:rgba(243,236,223,0.5);
+    margin-top:8px;
+  }
+  .countdown-sep{
+    font-family:'Anton',sans-serif;
+    font-size:clamp(2rem,5vw,3.6rem);
+    color:var(--gold);
+    opacity:0.4;
+    margin:0 2px;
+    align-self:center;
+    padding-bottom:20px;
+  }
+  .countdown-sub{
+    margin-top:32px;
+    font-size:0.9rem;
+    color:rgba(243,236,223,0.5);
+    letter-spacing:0.08em;
+  }
+  @media(max-width:640px){
+    .countdown-card{min-width:72px;padding:16px 14px;}
+    .countdown-sep{margin:0;}
+  }
 </style>
 </head>
 <body>
@@ -875,6 +960,36 @@
         <span class="lbl">Spotify Viral 50 Nederland</span>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="carnival-countdown">
+  <div class="confetti-container" id="confettiContainer"></div>
+  <div class="wrap countdown-inner">
+    <span class="eyebrow">Carnaval 2027</span>
+    <h2>De tent mag open over</h2>
+    <div class="countdown-grid">
+      <div class="countdown-card">
+        <span class="countdown-num" id="cd-days">---</span>
+        <span class="countdown-label">Dagen</span>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-card">
+        <span class="countdown-num" id="cd-hours">--</span>
+        <span class="countdown-label">Uren</span>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-card">
+        <span class="countdown-num" id="cd-minutes">--</span>
+        <span class="countdown-label">Minuten</span>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-card">
+        <span class="countdown-num" id="cd-seconds">--</span>
+        <span class="countdown-label">Seconden</span>
+      </div>
+    </div>
+    <p class="countdown-sub">7 februari 2027 &nbsp;·&nbsp; Slag &amp; Stoot maakt de tent kapot</p>
   </div>
 </section>
 
@@ -1146,44 +1261,93 @@
     });
   });
 
+  // ── Confetti ──
+  (function(){
+    const container = document.getElementById('confettiContainer');
+    if(!container) return;
+    const colors = ['#d9b25c','#f2a93b','#9a3a34','#f3ecdf','#e0691f','#f0d28e','#ffffff','#ff6b6b','#ffd93d'];
+    const shapes = ['rect','circle'];
+    for(let i=0;i<60;i++){
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      const color = colors[Math.floor(Math.random()*colors.length)];
+      const shape = shapes[Math.floor(Math.random()*shapes.length)];
+      const size = 6 + Math.random()*10;
+      el.style.cssText = [
+        'left:'+Math.random()*100+'%',
+        'width:'+size+'px',
+        'height:'+(shape==='circle'?size:size*1.6)+'px',
+        'background:'+color,
+        'border-radius:'+(shape==='circle'?'50%':'2px'),
+        'animation-duration:'+(4+Math.random()*6)+'s',
+        'animation-delay:'+Math.random()*6+'s',
+        'opacity:0',
+        'transform:rotate('+Math.random()*360+'deg)',
+      ].join(';');
+      container.appendChild(el);
+    }
+  })();
+
+  // ── Countdown to Carnaval 2027 ──
+  (function(){
+    const target = new Date('2027-02-07T10:00:00').getTime();
+    const els = {
+      days: document.getElementById('cd-days'),
+      hours: document.getElementById('cd-hours'),
+      minutes: document.getElementById('cd-minutes'),
+      seconds: document.getElementById('cd-seconds'),
+    };
+    function pad(n,len){return String(n).padStart(len,'0');}
+    function flip(el,val){
+      el.classList.remove('flip');
+      void el.offsetWidth;
+      el.textContent = val;
+      el.classList.add('flip');
+      setTimeout(()=>el.classList.remove('flip'),200);
+    }
+    const prev = {days:'',hours:'',minutes:'',seconds:''};
+    function tick(){
+      const now = Date.now();
+      const diff = Math.max(0, target - now);
+      const d = Math.floor(diff/86400000);
+      const h = Math.floor((diff%86400000)/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      const s = Math.floor((diff%60000)/1000);
+      const vals = {days:pad(d,3),hours:pad(h,2),minutes:pad(m,2),seconds:pad(s,2)};
+      Object.keys(vals).forEach(k=>{
+        if(vals[k]!==prev[k]){flip(els[k],vals[k]);prev[k]=vals[k];}
+      });
+    }
+    tick();
+    setInterval(tick,1000);
+  })();
+
   // Recap stories: fade audio in on hover, fade out on mouse leave
   document.querySelectorAll('.recap .ph').forEach(ph => {
     const video = ph.querySelector('video');
     if (!video) return;
-    let fadeInterval;
-    const step = 0.08;
+    let rafId;
+    const duration = 350;
 
-    ph.addEventListener('mouseenter', () => {
-      clearInterval(fadeInterval);
-      video.muted = false;
-      video.volume = 0;
-      const playPromise = video.play();
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(() => {});
-      }
-      fadeInterval = setInterval(() => {
-        video.volume = Math.min(1, video.volume + step);
-        if (video.volume >= 1) clearInterval(fadeInterval);
-      }, 30);
-    });
-
-    ph.addEventListener('mouseleave', () => {
-      clearInterval(fadeInterval);
-      fadeInterval = setInterval(() => {
-        const next = video.volume - step;
-        if (next <= 0) {
-          video.volume = 0;
+    function fadeTo(target) {
+      cancelAnimationFrame(rafId);
+      if (target > 0) video.muted = false;
+      const start = video.volume;
+      const startTime = performance.now();
+      function step(now) {
+        const t = Math.min(1, (now - startTime) / duration);
+        video.volume = start + (target - start) * t;
+        if (t < 1) {
+          rafId = requestAnimationFrame(step);
+        } else if (target === 0) {
           video.muted = true;
-          const playPromise = video.play();
-          if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.catch(() => {});
-          }
-          clearInterval(fadeInterval);
-        } else {
-          video.volume = next;
         }
-      }, 30);
-    });
+      }
+      rafId = requestAnimationFrame(step);
+    }
+
+    ph.addEventListener('mouseenter', () => fadeTo(1));
+    ph.addEventListener('mouseleave', () => fadeTo(0));
   });
 </script>
 </body>
