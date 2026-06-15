@@ -4,6 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Slag &amp; Stoot — Carnaval DJ &amp; MC Act</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="images/icon-512.png">
+<meta name="theme-color" content="#101a30">
+
+<!-- Social sharing (Open Graph / WhatsApp / Twitter) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Slag &amp; Stoot — Carnaval DJ &amp; MC Act">
+<meta property="og:description" content="De ultieme carnaval DJ &amp; MC act. Boek Slag &amp; Stoot voor jouw feest, optocht of evenement.">
+<meta property="og:image" content="images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Slag &amp; Stoot — Carnaval DJ &amp; MC Act">
+<meta name="twitter:description" content="De ultieme carnaval DJ &amp; MC act. Boek Slag &amp; Stoot voor jouw feest, optocht of evenement.">
+<meta name="twitter:image" content="images/og-image.jpg">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -102,6 +123,31 @@
     transition:background .2s ease, transform .2s ease;
   }
   .nav-cta:hover{background:var(--gold-light);transform:translateY(-1px);}
+
+  /* ===== NAV TOGGLE (mobile) ===== */
+  .nav-toggle{
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:5px;
+    width:40px;height:40px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+    margin-left:8px;
+  }
+  .nav-toggle span{
+    display:block;
+    width:22px;height:2px;
+    background:var(--cream);
+    border-radius:2px;
+    transition:transform .25s ease, opacity .25s ease;
+  }
+  .nav-toggle.active span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  .nav-toggle.active span:nth-child(2){opacity:0;}
+  .nav-toggle.active span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
 
   /* ===== HERO ===== */
   .hero{
@@ -698,12 +744,45 @@
     .insta-grid{grid-template-columns:repeat(3, 1fr);}
   }
   @media (max-width: 880px){
-    .nav-links{display:none;}
+    .nav-toggle{display:flex;}
+    .nav-links{
+      position:absolute;
+      top:100%;
+      left:0;right:0;
+      flex-direction:column;
+      align-items:stretch;
+      gap:0;
+      background:var(--navy);
+      border-bottom:1px solid rgba(217,178,92,0.18);
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .3s ease;
+    }
+    .nav-links.active{max-height:340px;}
+    .nav-links a{
+      padding:16px 28px;
+      border-top:1px solid rgba(243,236,223,0.08);
+      width:100%;
+    }
     .about-grid{grid-template-columns:1fr;gap:40px;}
     .music-feature{grid-template-columns:1fr;padding:24px;}
     .music-secondary{grid-template-columns:1fr;}
     .booking-panel{grid-template-columns:1fr;padding:40px 28px;}
-    .hero-meta{gap:32px;}
+    .hero-meta{gap:24px 32px;}
+  }
+  @media (max-width: 640px){
+    section{padding:72px 0;}
+    .nav-inner{padding:14px 20px;}
+    .nav-logo .word{font-size:1.05rem;}
+    .hero-inner{padding:140px 0 70px;}
+    .hero-cta{flex-direction:column;align-items:stretch;}
+    .hero-cta .btn{justify-content:center;}
+    .hero-meta{margin-top:48px;padding-top:24px;}
+    .stream-stat{flex-wrap:wrap;gap:20px 28px;}
+    .insta-grid{grid-template-columns:repeat(2, 1fr);}
+    .viral{padding:48px 0;}
+    .booking-panel{padding:32px 20px;}
+    .wrap{padding:0 20px;}
   }
 </style>
 </head>
@@ -719,13 +798,16 @@
       </svg>
       <div class="word">SLAG <span>&amp;</span> STOOT</div>
     </div>
-    <nav class="nav-links">
+    <nav class="nav-links" id="navLinks">
       <a href="#over-ons">Over ons</a>
       <a href="#muziek">Muziek</a>
       <a href="#instagram">Instagram</a>
       <a href="#boeken">Boeken</a>
     </nav>
     <a href="#boeken" class="nav-cta">Boek nu</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </header>
 
@@ -1028,5 +1110,21 @@
   </div>
 </footer>
 
+<script>
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('active');
+    navToggle.classList.toggle('active', isOpen);
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+      navToggle.classList.remove('active');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
 </body>
 </html>
